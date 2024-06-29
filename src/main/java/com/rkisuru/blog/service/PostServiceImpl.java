@@ -13,7 +13,7 @@ public class PostServiceImpl implements PostService{
     @Autowired
     private PostRepository postRepository;
 
-    public Post SavePost(Post post){
+    public Post savePost(Post post){
         post.setLikeCount(0);
         post.setViewCount(0);
         post.setDate(new Date());
