@@ -24,4 +24,14 @@ public class CommentController {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
         }
     }
+
+    @GetMapping("comments/{postId}")
+    public ResponseEntity<?> getCommentsByPostId(@PathVariable Long postId){
+        try {
+            return ResponseEntity.ok(commentService.getCommentsByPostId(postId));
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something Went Wrong.");
+        }
+    }
 }

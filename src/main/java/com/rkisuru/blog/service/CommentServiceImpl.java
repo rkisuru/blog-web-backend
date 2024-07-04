@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -34,5 +35,9 @@ public class CommentServiceImpl implements CommentService {
         }else {
             throw new EntityNotFoundException("Post not found");
         }
+    }
+
+    public List<Comment> getCommentsByPostId(Long postId){
+        return commentRepository.findByPostId(postId);
     }
 }
