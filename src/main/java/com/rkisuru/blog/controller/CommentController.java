@@ -1,37 +1,38 @@
 package com.rkisuru.blog.controller;
 
+import com.rkisuru.blog.request.CommentRequest;
 import com.rkisuru.blog.service.CommentService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api/v1/user/posts")
 @CrossOrigin
+@RequiredArgsConstructor
 public class CommentController {
 
-    @Autowired
-    CommentService commentService;
 
-    @PostMapping("comments/create")
-    public ResponseEntity<?> createComment(@RequestParam Long postId, @RequestParam String postedBy,
-                                           @RequestBody String content){
-        try{
-            return ResponseEntity.ok(commentService.createComment(postId, postedBy, content));
-        }
-        catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
-        }
+    private final CommentService commentService;
+
+    @PostMapping("/{postId}")
+    public ResponseEntity<?> createComment(@PathVariable Long postId, @RequestBody CommentRequest commentRequest){
+        return ResponseEntity.ok(commentService.createComment(postId, commentRequest));
+    }
+
+    @PutMapping("/{postId}/{commentId}")
+    public ResponseEntity<?> editComment(@PathVariable Long commentId, @RequestBody String content, Authentication connectedUser) throws IllegalAccessException {
+        return ResponseEntity.ok(commentService.editComment(commentId, content, connectedUser));
+    }
+
+    @DeleteMapping("/{postId}/{comment_id}")
+    public ResponseEntity<?> deleteComment(@PathVariable Long comment_id, Authentication connectedUser) throws IllegalAccessException {
+        return ResponseEntity.ok(commentService.deleteComment(comment_id, connectedUser));
     }
 
     @GetMapping("comments/{postId}")
     public ResponseEntity<?> getCommentsByPostId(@PathVariable Long postId){
-        try {
-            return ResponseEntity.ok(commentService.getCommentsByPostId(postId));
-        }
-        catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something Went Wrong.");
-        }
+        return ResponseEntity.ok(commentService.getCommentsByPostId(postId));
     }
 }
