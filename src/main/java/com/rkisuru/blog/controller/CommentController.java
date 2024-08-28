@@ -22,12 +22,12 @@ public class CommentController {
     }
 
     @PutMapping("/{postId}/{commentId}")
-    public ResponseEntity<?> editComment(@PathVariable Long commentId, @RequestBody String content, Authentication connectedUser) throws IllegalAccessException {
+    public ResponseEntity<?> editComment(@PathVariable Long commentId, @RequestBody String content, Authentication connectedUser) {
         return ResponseEntity.ok(commentService.editComment(commentId, content, connectedUser));
     }
 
     @DeleteMapping("/{postId}/{comment_id}")
-    public ResponseEntity<?> deleteComment(@PathVariable Long comment_id, Authentication connectedUser) throws IllegalAccessException {
+    public ResponseEntity<?> deleteComment(@PathVariable Long comment_id, Authentication connectedUser) {
         return ResponseEntity.ok(commentService.deleteComment(comment_id, connectedUser));
     }
 
