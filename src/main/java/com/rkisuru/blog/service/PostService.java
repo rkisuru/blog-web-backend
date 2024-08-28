@@ -1,12 +1,15 @@
 package com.rkisuru.blog.service;
 
 import com.rkisuru.blog.entity.Post;
+import com.rkisuru.blog.entity.PostLike;
 import com.rkisuru.blog.mapper.PostMapper;
+import com.rkisuru.blog.repository.PostLikeRepository;
 import com.rkisuru.blog.repository.PostRepository;
 import com.rkisuru.blog.request.EditRequest;
 import com.rkisuru.blog.request.PostRequest;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final PostMapper mapper;
+    private final PostLikeRepository postLikeRepository;
 
     public Long savePost(PostRequest request){
 
@@ -49,8 +53,19 @@ public class PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post not found"));
 
+        Optional<PostLike> optPostLike = postLikeRepository.findPostLikeById(connectedUser.getName(), postId);
+        if (optPostLike.isPresent()){
+            PostLike postLike = optPostLike.get();
+            post.setLikeCount(post.getLikeCount()-1);
+            postLikeRepository.delete(postLike);
+        } else {
+            PostLike postLike = new PostLike();
             post.setLikeCount(post.getLikeCount()+1);
-            return postRepository.save(post);
+            postLike.setLikedBy(connectedUser.getName());
+            postLike.setPost(post);
+            postLikeRepository.save(postLike);
+        }
+        return post;
     }
 
     public List<Post> searchByTitle(String title){
@@ -64,8 +79,9 @@ public class PostService {
 
             if (post.getPostedBy().equals(connectedUser.getName())){
                 postRepository.delete(post);
+                return "Post Deleted Successfully";
             }
-            return "Post Deleted Successfully";
+            throw new AccessDeniedException("Access denied");
     }
 
     public Post editPost(Long postId, EditRequest request, Authentication connectedUser){
@@ -74,12 +90,21 @@ public class PostService {
                 .orElseThrow(()-> new EntityNotFoundException("Post not found"));
 
             if (Opost.getPostedBy().equals(connectedUser.getName())){
-                Opost.setTitle(request.title());
-                Opost.setContent(request.content());
-                Opost.setCover(request.cover());
-                Opost.setTags(request.tags());
-                return postRepository.save(Opost);
+                if (request.title() != null) {
+                    Opost.setTitle(request.title());
+                }
+                if (request.content() != null) {
+                    Opost.setContent(request.content());
+                }
+                if (request.cover() != null) {
+                    Opost.setCover(request.cover());
+                }
+                if (request.tags() != null) {
+                    Opost.setTags(request.tags());
+                }
+                postRepository.save(Opost);
+                return Opost;
             }
-       return Opost;
+            throw new AccessDeniedException("Access denied");
     }
 }

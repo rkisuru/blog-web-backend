@@ -49,6 +49,9 @@ public class Post {
     private int likeCount;
     private int viewCount;
 
+    @OneToMany(mappedBy = "post")
+    private List<PostLike> likes;
+
     private List<String> tags;
 
     @OneToMany(mappedBy = "post")
