@@ -10,7 +10,6 @@ public class CommentMapper {
     public Comment toComment(CommentRequest request) {
 
         return Comment.builder()
-                .id(request.id())
                 .content(request.content())
                 .build();
     }

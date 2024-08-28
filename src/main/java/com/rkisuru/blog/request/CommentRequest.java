@@ -5,8 +5,6 @@ import jakarta.validation.constraints.NotNull;
 
 public record CommentRequest(
 
-        Long id,
-
         @NotNull
         @NotEmpty
         String content
