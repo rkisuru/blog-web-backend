@@ -25,9 +25,10 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(nullable = false)
     private String title;
 
-    @Column(length = 10000)
+    @Column(nullable = false)
     private String content;
 
     @CreatedBy
@@ -42,6 +43,7 @@ public class Post {
     @Column(insertable = false)
     private String lastModifiedBy;
 
+    @Column(nullable = false)
     private String cover;
 
     private int likeCount;
