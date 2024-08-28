@@ -1,6 +1,7 @@
 package com.rkisuru.blog.controller;
 
 import com.rkisuru.blog.entity.Post;
+import com.rkisuru.blog.request.EditRequest;
 import com.rkisuru.blog.request.PostRequest;
 import com.rkisuru.blog.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -44,16 +45,12 @@ public class PostController {
     }
 
     @PutMapping("/{postId}/edit")
-    public ResponseEntity<?> updatePost(@PathVariable Long postId, @RequestBody Post post, Authentication connectedUser){
-        return ResponseEntity.ok(postService.editPost(postId, post, connectedUser));
+    public ResponseEntity<?> updatePost(@PathVariable Long postId, @RequestBody EditRequest request, Authentication connectedUser){
+        return ResponseEntity.ok(postService.editPost(postId, request, connectedUser));
     }
 
-    @GetMapping("/search/{name}")
-    public ResponseEntity<?> searchByName(@PathVariable String name){
-        try {
-            return ResponseEntity.status(HttpStatus.OK).body(postService.searchByName(name));
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    @GetMapping("/search")
+    public ResponseEntity<?> searchByTitle(@RequestParam String title){
+        return ResponseEntity.ok(postService.searchByTitle("%"+title+"%"));
     }
 }
