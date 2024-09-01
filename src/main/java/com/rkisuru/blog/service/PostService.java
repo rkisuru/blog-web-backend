@@ -7,12 +7,15 @@ import com.rkisuru.blog.repository.PostLikeRepository;
 import com.rkisuru.blog.repository.PostRepository;
 import com.rkisuru.blog.request.EditRequest;
 import com.rkisuru.blog.request.PostRequest;
+import com.rkisuru.blog.response.PostResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +26,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostMapper mapper;
     private final PostLikeRepository postLikeRepository;
+    private final FileUploadService fileUploadService;
 
     public Long savePost(PostRequest request){
 
@@ -32,20 +36,22 @@ public class PostService {
         return postRepository.save(post).getId();
     }
 
-    public List<Post> getAllPosts(){
-        return postRepository.findAll();
+    public List<PostResponse> getAllPosts(){
+        return postRepository.findAll().stream()
+                .map(mapper::fromPost)
+                .toList();
     }
 
-    public Post getPostById(Long postId, Authentication connectedUser){
+    public PostResponse getPostById(Long postId, Authentication connectedUser){
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post not found"));
 
             if (!post.getPostedBy().equals(connectedUser.getName())){
                 post.setViewCount(post.getViewCount()+1);
-                return postRepository.save(post);
+                postRepository.save(post);
             }
 
-        return post;
+        return mapper.fromPost(post);
     }
 
 
@@ -68,8 +74,11 @@ public class PostService {
         return post;
     }
 
-    public List<Post> searchByTitle(String title){
-        return postRepository.findAllByTitle(title);
+    public List<PostResponse> searchByTitle(String title){
+        return postRepository.findAllByTitle(title)
+                .stream()
+                .map(mapper::fromPost)
+                .toList();
     }
 
     public String deletePost(Long postId, Authentication connectedUser){
@@ -96,9 +105,6 @@ public class PostService {
                 if (request.content() != null) {
                     Opost.setContent(request.content());
                 }
-                if (request.cover() != null) {
-                    Opost.setCover(request.cover());
-                }
                 if (request.tags() != null) {
                     Opost.setTags(request.tags());
                 }
@@ -106,5 +112,25 @@ public class PostService {
                 return Opost;
             }
             throw new AccessDeniedException("Access denied");
+    }
+
+    public void uploadPostCover(Long postId, MultipartFile file, Authentication connectedUser) throws IOException {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("Post not found"));
+        if (post.getPostedBy().equals(connectedUser.getName())){
+            var postCover = fileUploadService.uploadFile(file);
+            post.setCover(postCover);
+            postRepository.save(post);
+        }
+    }
+
+    public void updatePostCover(Long postId, MultipartFile file, Authentication connectedUser) throws IOException {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("Post not found"));
+        if (post.getPostedBy().equals(connectedUser.getName())){
+            var postCover = fileUploadService.uploadFile(file);
+            post.setCover(postCover);
+            postRepository.save(post);
+        }
     }
 }
