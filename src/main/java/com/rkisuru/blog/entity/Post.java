@@ -43,7 +43,6 @@ public class Post {
     @Column(insertable = false)
     private String lastModifiedBy;
 
-    @Column(nullable = false)
     private String cover;
 
     private int likeCount;
