@@ -1,15 +1,16 @@
 package com.rkisuru.blog.controller;
 
-import com.rkisuru.blog.entity.Post;
 import com.rkisuru.blog.request.EditRequest;
 import com.rkisuru.blog.request.PostRequest;
+import com.rkisuru.blog.response.PostResponse;
 import com.rkisuru.blog.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -25,7 +26,7 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Post>> getAllPosts(){
+    public ResponseEntity<List<PostResponse>> getAllPosts(){
         return ResponseEntity.ok(postService.getAllPosts());
     }
 
@@ -52,5 +53,17 @@ public class PostController {
     @GetMapping("/search")
     public ResponseEntity<?> searchByTitle(@RequestParam String title){
         return ResponseEntity.ok(postService.searchByTitle("%"+title+"%"));
+    }
+
+    @PostMapping(value = "/cover/{postId}", consumes = "multipart/form-data")
+    public ResponseEntity<?> uploadPostCover(@RequestParam("file") MultipartFile file, @PathVariable Long postId, Authentication connectedUser) throws IOException {
+        postService.uploadPostCover(postId, file, connectedUser);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(value = "/{postId}/edit/cover", consumes = "multipart/form-data")
+    public ResponseEntity<?> updatePostCover(@RequestParam("file") MultipartFile file, @PathVariable Long postId, Authentication connectedUser) throws IOException {
+        postService.updatePostCover(postId, file, connectedUser);
+        return ResponseEntity.ok().build();
     }
 }
