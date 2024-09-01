@@ -15,7 +15,6 @@ public record PostRequest(
         @NotEmpty
         String content,
 
-        String cover,
         List<String> tags
 ) {
 }
