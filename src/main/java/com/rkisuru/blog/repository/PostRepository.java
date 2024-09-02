@@ -4,6 +4,7 @@ import com.rkisuru.blog.entity.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,4 +16,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findAllByTitle(@Param("title") String title);
 
     List<Post> findByTags(List<String> tags);
+
+    @Query("SELECT posts FROM Post posts WHERE posts.postedBy LIKE %:postedBy%")
+    List<Post> findPostsByPostedBy(@Param("postedBy") String postedBy);
 }

@@ -133,4 +133,13 @@ public class PostService {
             postRepository.save(post);
         }
     }
+
+    public List<PostResponse> findPostsByUser(Authentication connectedUser) {
+
+        return postRepository.findPostsByPostedBy(connectedUser.getName())
+                .stream()
+                .map(mapper::fromPost)
+                .toList();
+
+    }
 }

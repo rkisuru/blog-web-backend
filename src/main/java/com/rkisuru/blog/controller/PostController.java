@@ -14,13 +14,13 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/user/posts")
+@RequestMapping("/api/v1/posts")
 @RequiredArgsConstructor
 public class PostController {
 
     private final PostService postService;
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<?> createPost(@RequestBody PostRequest request){
         return ResponseEntity.ok(postService.savePost(request));
     }
@@ -65,5 +65,10 @@ public class PostController {
     public ResponseEntity<?> updatePostCover(@RequestParam("file") MultipartFile file, @PathVariable Long postId, Authentication connectedUser) throws IOException {
         postService.updatePostCover(postId, file, connectedUser);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<List<PostResponse>> findAllPostsByUser(Authentication connectedUser){
+        return ResponseEntity.ok(postService.findPostsByUser(connectedUser));
     }
 }
