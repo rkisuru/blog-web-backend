@@ -1,8 +1,10 @@
 package com.rkisuru.blog.service;
 
+import com.rkisuru.blog.entity.Comment;
 import com.rkisuru.blog.entity.Post;
 import com.rkisuru.blog.entity.PostLike;
 import com.rkisuru.blog.mapper.PostMapper;
+import com.rkisuru.blog.repository.CommentRepository;
 import com.rkisuru.blog.repository.PostLikeRepository;
 import com.rkisuru.blog.repository.PostRepository;
 import com.rkisuru.blog.request.EditRequest;
@@ -27,6 +29,7 @@ public class PostService {
     private final PostMapper mapper;
     private final PostLikeRepository postLikeRepository;
     private final FileUploadService fileUploadService;
+    private final CommentRepository commentRepository;
 
     public Long savePost(PostRequest request){
 
@@ -86,7 +89,10 @@ public class PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post not found with id:"+postId));
 
+        List<Comment> postComments = commentRepository.findByPostId(postId);
+
             if (post.getPostedBy().equals(connectedUser.getName())){
+                commentRepository.deleteAll(postComments);
                 postRepository.delete(post);
                 return "Post Deleted Successfully";
             }
