@@ -90,9 +90,11 @@ public class PostService {
                 .orElseThrow(() -> new EntityNotFoundException("Post not found with id:"+postId));
 
         List<Comment> postComments = commentRepository.findByPostId(postId);
+        List<PostLike> postLikes = postLikeRepository.findPostLikeByPostId(postId);
 
             if (post.getPostedBy().equals(connectedUser.getName())){
                 commentRepository.deleteAll(postComments);
+                postLikeRepository.deleteAll(postLikes);
                 postRepository.delete(post);
                 return "Post Deleted Successfully";
             }
