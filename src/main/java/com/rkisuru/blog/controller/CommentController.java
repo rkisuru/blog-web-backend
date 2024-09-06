@@ -21,12 +21,12 @@ public class CommentController {
         return ResponseEntity.ok(commentService.createComment(postId, commentRequest));
     }
 
-    @PutMapping("/{postId}/{commentId}")
+    @PutMapping("/{commentId}")
     public ResponseEntity<?> editComment(@PathVariable Long commentId, @RequestBody String content, Authentication connectedUser) {
         return ResponseEntity.ok(commentService.editComment(commentId, content, connectedUser));
     }
 
-    @DeleteMapping("/{postId}/{comment_id}")
+    @DeleteMapping("/{comment_id}")
     public ResponseEntity<?> deleteComment(@PathVariable Long comment_id, Authentication connectedUser) {
         return ResponseEntity.ok(commentService.deleteComment(comment_id, connectedUser));
     }
