@@ -1,5 +1,6 @@
 package com.rkisuru.blog.controller;
 
+import com.rkisuru.blog.request.CommentEditRequest;
 import com.rkisuru.blog.request.CommentRequest;
 import com.rkisuru.blog.service.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -17,13 +18,13 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping("/{postId}")
-    public ResponseEntity<?> createComment(@PathVariable Long postId, @RequestBody CommentRequest commentRequest){
+    public ResponseEntity<?> createComment(@PathVariable Long postId, @RequestBody CommentRequest commentRequest) throws Exception {
         return ResponseEntity.ok(commentService.createComment(postId, commentRequest));
     }
 
     @PutMapping("/{commentId}")
-    public ResponseEntity<?> editComment(@PathVariable Long commentId, @RequestBody String content, Authentication connectedUser) {
-        return ResponseEntity.ok(commentService.editComment(commentId, content, connectedUser));
+    public ResponseEntity<?> editComment(@PathVariable Long commentId, @RequestBody CommentEditRequest request, Authentication connectedUser) {
+        return ResponseEntity.ok(commentService.editComment(commentId, request, connectedUser));
     }
 
     @DeleteMapping("/{comment_id}")
