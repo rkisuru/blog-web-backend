@@ -107,13 +107,13 @@ public class PostService {
                 .orElseThrow(()-> new EntityNotFoundException("Post not found"));
 
             if (Opost.getPostedBy().equals(connectedUser.getName())){
-                if (request.title() != null) {
+                if (!request.title().isBlank()) {
                     Opost.setTitle(request.title());
                 }
-                if (request.content() != null) {
+                if (!request.content().isBlank()) {
                     Opost.setContent(request.content());
                 }
-                if (request.tags() != null) {
+                if (!request.tags().isEmpty()) {
                     Opost.setTags(request.tags());
                 }
                 postRepository.save(Opost);
