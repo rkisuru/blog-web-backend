@@ -14,6 +14,7 @@ public class PostMapper {
         return Post.builder()
                 .title(request.title())
                 .content(request.content())
+                .postType(request.type())
                 .tags(request.tags())
                 .build();
     }
@@ -23,6 +24,7 @@ public class PostMapper {
         return PostResponse.builder()
                 .id(post.getId())
                 .title(post.getTitle())
+                .type(post.getPostType())
                 .content(post.getContent())
                 .likeCount(post.getLikeCount())
                 .tags(post.getTags())

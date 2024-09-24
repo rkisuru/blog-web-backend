@@ -1,5 +1,6 @@
 package com.rkisuru.blog.entity;
 
+import com.rkisuru.blog.type.PostType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,6 +48,9 @@ public class Post {
 
     private int likeCount;
     private int viewCount;
+
+    @Enumerated(EnumType.STRING)
+    private PostType postType;
 
     @OneToMany(mappedBy = "post")
     private List<PostLike> likes;

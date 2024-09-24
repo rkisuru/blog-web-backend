@@ -1,6 +1,7 @@
 package com.rkisuru.blog.response;
 
 import com.rkisuru.blog.entity.Comment;
+import com.rkisuru.blog.type.PostType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +18,7 @@ public class PostResponse {
 
     private long id;
     private String title;
+    private PostType type;
     private String content;
     private byte[] coverImage;
     private String createdBy;
