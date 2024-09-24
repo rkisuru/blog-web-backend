@@ -4,6 +4,7 @@ import com.rkisuru.blog.request.EditRequest;
 import com.rkisuru.blog.request.PostRequest;
 import com.rkisuru.blog.response.PostResponse;
 import com.rkisuru.blog.service.PostService;
+import com.rkisuru.blog.type.PostType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -70,5 +71,10 @@ public class PostController {
     @GetMapping("/user")
     public ResponseEntity<List<PostResponse>> findAllPostsByUser(Authentication connectedUser){
         return ResponseEntity.ok(postService.findPostsByUser(connectedUser));
+    }
+
+    @GetMapping("/filter/{postType}")
+    public ResponseEntity<?> findPostsByPostType(@PathVariable PostType postType){
+        return ResponseEntity.ok(postService.filterByType(postType));
     }
 }

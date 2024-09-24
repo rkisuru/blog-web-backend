@@ -10,6 +10,7 @@ import com.rkisuru.blog.repository.PostRepository;
 import com.rkisuru.blog.request.EditRequest;
 import com.rkisuru.blog.request.PostRequest;
 import com.rkisuru.blog.response.PostResponse;
+import com.rkisuru.blog.type.PostType;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -110,6 +111,9 @@ public class PostService {
                 if (!request.title().isBlank()) {
                     Opost.setTitle(request.title());
                 }
+                if (request.type() != null) {
+                    Opost.setPostType(request.type());
+                }
                 if (!request.content().isBlank()) {
                     Opost.setContent(request.content());
                 }
@@ -145,6 +149,15 @@ public class PostService {
     public List<PostResponse> findPostsByUser(Authentication connectedUser) {
 
         return postRepository.findPostsByPostedBy(connectedUser.getName())
+                .stream()
+                .map(mapper::fromPost)
+                .toList();
+
+    }
+
+    public List<PostResponse> filterByType(PostType type) {
+
+        return postRepository.findPostsByPostType(type)
                 .stream()
                 .map(mapper::fromPost)
                 .toList();
