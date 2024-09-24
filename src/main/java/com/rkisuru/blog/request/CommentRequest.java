@@ -5,8 +5,8 @@ import jakarta.validation.constraints.NotNull;
 
 public record CommentRequest(
 
-        @NotNull
-        @NotEmpty
+        @NotNull(message = "Enter the comment")
+        @NotEmpty(message = "Enter the comment")
         String content
 ) {
 }

@@ -5,6 +5,7 @@ import com.rkisuru.blog.request.PostRequest;
 import com.rkisuru.blog.response.PostResponse;
 import com.rkisuru.blog.service.PostService;
 import com.rkisuru.blog.type.PostType;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -22,7 +23,7 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createPost(@RequestBody PostRequest request){
+    public ResponseEntity<?> createPost(@Valid @RequestBody PostRequest request){
         return ResponseEntity.ok(postService.savePost(request));
     }
 

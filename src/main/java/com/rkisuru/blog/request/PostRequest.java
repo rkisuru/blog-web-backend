@@ -8,12 +8,12 @@ import java.util.List;
 
 public record PostRequest(
 
-        @NotNull
-        @NotEmpty
+        @NotNull(message = "Title is required")
+        @NotEmpty(message = "Title is required")
         String title,
 
-        @NotNull
-        @NotEmpty
+        @NotNull(message = "Content is required")
+        @NotEmpty(message = "Content is required")
         String content,
 
         @NotNull

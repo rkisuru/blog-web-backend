@@ -3,6 +3,7 @@ package com.rkisuru.blog.controller;
 import com.rkisuru.blog.request.CommentEditRequest;
 import com.rkisuru.blog.request.CommentRequest;
 import com.rkisuru.blog.service.CommentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -18,7 +19,7 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping("/{postId}")
-    public ResponseEntity<?> createComment(@PathVariable Long postId, @RequestBody CommentRequest commentRequest) throws Exception {
+    public ResponseEntity<?> createComment(@PathVariable Long postId, @Valid @RequestBody CommentRequest commentRequest) throws Exception {
         return ResponseEntity.ok(commentService.createComment(postId, commentRequest));
     }
 
