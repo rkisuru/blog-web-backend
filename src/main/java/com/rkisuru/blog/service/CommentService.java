@@ -2,6 +2,7 @@ package com.rkisuru.blog.service;
 
 import com.rkisuru.blog.entity.Comment;
 import com.rkisuru.blog.entity.Post;
+import com.rkisuru.blog.exception.OperationNotPermittedException;
 import com.rkisuru.blog.mapper.CommentMapper;
 import com.rkisuru.blog.repository.CommentRepository;
 import com.rkisuru.blog.repository.PostRepository;
@@ -9,7 +10,6 @@ import com.rkisuru.blog.request.CommentEditRequest;
 import com.rkisuru.blog.request.CommentRequest;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -53,7 +53,7 @@ public class CommentService {
                 }
                 return commentRepository.save(comment);
             }
-            throw new AccessDeniedException("Access denied");
+            throw new OperationNotPermittedException("You do not have permission to edit this comment");
     }
 
     public String deleteComment(Long commentId, Authentication connectedUser) {
@@ -65,7 +65,7 @@ public class CommentService {
                 commentRepository.delete(comment);
                 return "Comment deleted successfully";
             }
-            throw new AccessDeniedException("Access denied");
+            throw new OperationNotPermittedException("You do not have permission to delete this comment");
     }
 
     public List<Comment> getCommentsByPostId(Long postId){

@@ -3,6 +3,7 @@ package com.rkisuru.blog.service;
 import com.rkisuru.blog.entity.Comment;
 import com.rkisuru.blog.entity.Post;
 import com.rkisuru.blog.entity.PostLike;
+import com.rkisuru.blog.exception.OperationNotPermittedException;
 import com.rkisuru.blog.mapper.PostMapper;
 import com.rkisuru.blog.repository.CommentRepository;
 import com.rkisuru.blog.repository.PostLikeRepository;
@@ -13,7 +14,6 @@ import com.rkisuru.blog.response.PostResponse;
 import com.rkisuru.blog.type.PostType;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -99,7 +99,7 @@ public class PostService {
                 postRepository.delete(post);
                 return "Post Deleted Successfully";
             }
-            throw new AccessDeniedException("Access denied");
+            throw new OperationNotPermittedException("You are not allowed to delete this post");
     }
 
     public Post editPost(Long postId, EditRequest request, Authentication connectedUser){
@@ -123,7 +123,7 @@ public class PostService {
                 postRepository.save(Opost);
                 return Opost;
             }
-            throw new AccessDeniedException("Access denied");
+            throw new OperationNotPermittedException("You are not allowed to edit this post");
     }
 
     public void uploadPostCover(Long postId, MultipartFile file, Authentication connectedUser) throws IOException {
