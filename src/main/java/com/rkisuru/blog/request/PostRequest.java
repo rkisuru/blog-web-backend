@@ -16,9 +16,7 @@ public record PostRequest(
         @NotEmpty(message = "Content is required")
         String content,
 
-        @NotNull
         PostType type,
-
         List<String> tags
 ) {
 }
