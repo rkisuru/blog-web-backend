@@ -5,9 +5,13 @@ import com.rkisuru.blog.request.CommentRequest;
 import com.rkisuru.blog.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/user/posts")
@@ -29,8 +33,14 @@ public class CommentController {
     }
 
     @DeleteMapping("/{comment_id}")
-    public ResponseEntity<?> deleteComment(@PathVariable Long comment_id, Authentication connectedUser) {
-        return ResponseEntity.ok(commentService.deleteComment(comment_id, connectedUser));
+    public ResponseEntity<Map<String, String>> deleteComment(@PathVariable Long comment_id, Authentication connectedUser) {
+
+        commentService.deleteComment(comment_id, connectedUser);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Comment deleted successfully");
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
     }
 
     @GetMapping("comments/{postId}")

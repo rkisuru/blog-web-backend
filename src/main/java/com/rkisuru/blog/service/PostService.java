@@ -85,7 +85,7 @@ public class PostService {
                 .toList();
     }
 
-    public String deletePost(Long postId, Authentication connectedUser){
+    public void deletePost(Long postId, Authentication connectedUser){
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post not found with id:"+postId));
@@ -97,7 +97,6 @@ public class PostService {
                 commentRepository.deleteAll(postComments);
                 postLikeRepository.deleteAll(postLikes);
                 postRepository.delete(post);
-                return "Post Deleted Successfully";
             }
             throw new OperationNotPermittedException("You are not allowed to delete this post");
     }

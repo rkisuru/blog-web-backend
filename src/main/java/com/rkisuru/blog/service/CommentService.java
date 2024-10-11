@@ -56,14 +56,13 @@ public class CommentService {
             throw new OperationNotPermittedException("You do not have permission to edit this comment");
     }
 
-    public String deleteComment(Long commentId, Authentication connectedUser) {
+    public void deleteComment(Long commentId, Authentication connectedUser) {
 
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new EntityNotFoundException("Comment not found"));
 
             if (comment.getPostedBy().equals(connectedUser.getName())) {
                 commentRepository.delete(comment);
-                return "Comment deleted successfully";
             }
             throw new OperationNotPermittedException("You do not have permission to delete this comment");
     }

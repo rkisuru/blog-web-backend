@@ -7,13 +7,16 @@ import com.rkisuru.blog.service.PostService;
 import com.rkisuru.blog.type.PostType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/posts")
@@ -43,8 +46,14 @@ public class PostController {
     }
 
     @DeleteMapping("/{postId}/delete")
-    public ResponseEntity<?> deletePost(@PathVariable Long postId, Authentication connectedUser){
-        return ResponseEntity.ok(postService.deletePost(postId, connectedUser));
+    public ResponseEntity<Map<String, String>> deletePost(@PathVariable Long postId, Authentication connectedUser){
+
+        postService.deletePost(postId, connectedUser);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "post deleted successfully");
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
     }
 
     @PutMapping("/{postId}/edit")
