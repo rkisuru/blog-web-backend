@@ -7,7 +7,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -28,14 +29,14 @@ public class CommentController {
     }
 
     @PutMapping("/{commentId}")
-    public ResponseEntity<?> editComment(@PathVariable Long commentId, @RequestBody CommentEditRequest request, Authentication connectedUser) {
-        return ResponseEntity.ok(commentService.editComment(commentId, request, connectedUser));
+    public ResponseEntity<?> editComment(@PathVariable Long commentId, @RequestBody CommentEditRequest request, @AuthenticationPrincipal OAuth2User user) {
+        return ResponseEntity.ok(commentService.editComment(commentId, request, user));
     }
 
     @DeleteMapping("/{comment_id}")
-    public ResponseEntity<Map<String, String>> deleteComment(@PathVariable Long comment_id, Authentication connectedUser) {
+    public ResponseEntity<Map<String, String>> deleteComment(@PathVariable Long comment_id, @AuthenticationPrincipal OAuth2User user) {
 
-        commentService.deleteComment(comment_id, connectedUser);
+        commentService.deleteComment(comment_id, user);
         Map<String, String> response = new HashMap<>();
         response.put("message", "Comment deleted successfully");
         return ResponseEntity.ok()

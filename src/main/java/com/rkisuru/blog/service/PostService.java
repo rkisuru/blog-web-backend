@@ -14,7 +14,8 @@ import com.rkisuru.blog.response.PostResponse;
 import com.rkisuru.blog.type.PostType;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -46,11 +47,11 @@ public class PostService {
                 .toList();
     }
 
-    public PostResponse getPostById(Long postId, Authentication connectedUser){
+    public PostResponse getPostById(Long postId, @AuthenticationPrincipal OAuth2User user){
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post not found"));
 
-            if (!post.getPostedBy().equals(connectedUser.getName())){
+            if (!post.getPostedBy().equals(user.getAttribute("sub"))){
                 post.setViewCount(post.getViewCount()+1);
                 postRepository.save(post);
             }
@@ -59,11 +60,11 @@ public class PostService {
     }
 
 
-    public Post likePost(Long postId, Authentication connectedUser){
+    public Post likePost(Long postId, @AuthenticationPrincipal OAuth2User user){
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post not found"));
 
-        Optional<PostLike> optPostLike = postLikeRepository.findPostLikeById(connectedUser.getName(), postId);
+        Optional<PostLike> optPostLike = postLikeRepository.findPostLikeById(user.getAttribute("sub"), postId);
         if (optPostLike.isPresent()){
             PostLike postLike = optPostLike.get();
             post.setLikeCount(post.getLikeCount()-1);
@@ -71,7 +72,7 @@ public class PostService {
         } else {
             PostLike postLike = new PostLike();
             post.setLikeCount(post.getLikeCount()+1);
-            postLike.setLikedBy(connectedUser.getName());
+            postLike.setLikedBy(user.getAttribute("sub"));
             postLike.setPost(post);
             postLikeRepository.save(postLike);
         }
@@ -85,7 +86,7 @@ public class PostService {
                 .toList();
     }
 
-    public void deletePost(Long postId, Authentication connectedUser){
+    public void deletePost(Long postId, @AuthenticationPrincipal OAuth2User user){
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post not found with id:"+postId));
@@ -93,7 +94,7 @@ public class PostService {
         List<Comment> postComments = commentRepository.findByPostId(postId);
         List<PostLike> postLikes = postLikeRepository.findPostLikeByPostId(postId);
 
-            if (post.getPostedBy().equals(connectedUser.getName())){
+            if (post.getPostedBy().equals(user.getAttribute("sub"))){
                 commentRepository.deleteAll(postComments);
                 postLikeRepository.deleteAll(postLikes);
                 postRepository.delete(post);
@@ -101,12 +102,12 @@ public class PostService {
             throw new OperationNotPermittedException("You are not allowed to delete this post");
     }
 
-    public Post editPost(Long postId, EditRequest request, Authentication connectedUser){
+    public Post editPost(Long postId, EditRequest request, @AuthenticationPrincipal OAuth2User user){
 
         Post Opost = postRepository.findById(postId)
                 .orElseThrow(()-> new EntityNotFoundException("Post not found"));
 
-            if (Opost.getPostedBy().equals(connectedUser.getName())){
+            if (Opost.getPostedBy().equals(user.getAttribute("sub"))){
                 if (!request.title().isBlank()) {
                     Opost.setTitle(request.title());
                 }
@@ -125,29 +126,29 @@ public class PostService {
             throw new OperationNotPermittedException("You are not allowed to edit this post");
     }
 
-    public void uploadPostCover(Long postId, MultipartFile file, Authentication connectedUser) throws IOException {
+    public void uploadPostCover(Long postId, MultipartFile file, @AuthenticationPrincipal OAuth2User user) throws IOException {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post not found"));
-        if (post.getPostedBy().equals(connectedUser.getName())){
+        if (post.getPostedBy().equals(user.getAttribute("sub"))){
             var postCover = fileUploadService.uploadFile(file);
             post.setCover(postCover);
             postRepository.save(post);
         }
     }
 
-    public void updatePostCover(Long postId, MultipartFile file, Authentication connectedUser) throws IOException {
+    public void updatePostCover(Long postId, MultipartFile file, @AuthenticationPrincipal OAuth2User user) throws IOException {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post not found"));
-        if (post.getPostedBy().equals(connectedUser.getName())){
+        if (post.getPostedBy().equals(user.getAttribute("sub"))){
             var postCover = fileUploadService.uploadFile(file);
             post.setCover(postCover);
             postRepository.save(post);
         }
     }
 
-    public List<PostResponse> findPostsByUser(Authentication connectedUser) {
+    public List<PostResponse> findPostsByUser(@AuthenticationPrincipal OAuth2User user) {
 
-        return postRepository.findPostsByPostedBy(connectedUser.getName())
+        return postRepository.findPostsByPostedBy(user.getAttribute("sub"))
                 .stream()
                 .map(mapper::fromPost)
                 .toList();

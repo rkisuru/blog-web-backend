@@ -9,7 +9,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,19 +37,19 @@ public class PostController {
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<?> getPostById(@PathVariable Long postId, Authentication connectedUser){
-        return ResponseEntity.ok(postService.getPostById(postId, connectedUser));
+    public ResponseEntity<?> getPostById(@PathVariable Long postId, @AuthenticationPrincipal OAuth2User user){
+        return ResponseEntity.ok(postService.getPostById(postId, user));
     }
 
     @PutMapping("/{postId}/like")
-    public ResponseEntity<?> likePost(@PathVariable Long postId, Authentication connectedUser){
-        return ResponseEntity.ok(postService.likePost(postId, connectedUser));
+    public ResponseEntity<?> likePost(@PathVariable Long postId, @AuthenticationPrincipal OAuth2User user){
+        return ResponseEntity.ok(postService.likePost(postId, user));
     }
 
-    @DeleteMapping("/{postId}/delete")
-    public ResponseEntity<Map<String, String>> deletePost(@PathVariable Long postId, Authentication connectedUser){
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<Map<String, String>> deletePost(@PathVariable Long postId, @AuthenticationPrincipal OAuth2User user){
 
-        postService.deletePost(postId, connectedUser);
+        postService.deletePost(postId, user);
         Map<String, String> response = new HashMap<>();
         response.put("message", "post deleted successfully");
         return ResponseEntity.ok()
@@ -56,9 +57,9 @@ public class PostController {
                 .body(response);
     }
 
-    @PutMapping("/{postId}/edit")
-    public ResponseEntity<?> updatePost(@PathVariable Long postId, @RequestBody EditRequest request, Authentication connectedUser){
-        return ResponseEntity.ok(postService.editPost(postId, request, connectedUser));
+    @PutMapping("/{postId}")
+    public ResponseEntity<?> updatePost(@PathVariable Long postId, @RequestBody EditRequest request, @AuthenticationPrincipal OAuth2User user){
+        return ResponseEntity.ok(postService.editPost(postId, request, user));
     }
 
     @GetMapping("/search")
@@ -67,20 +68,20 @@ public class PostController {
     }
 
     @PostMapping(value = "/cover/{postId}", consumes = "multipart/form-data")
-    public ResponseEntity<?> uploadPostCover(@RequestParam("file") MultipartFile file, @PathVariable Long postId, Authentication connectedUser) throws IOException {
-        postService.uploadPostCover(postId, file, connectedUser);
+    public ResponseEntity<?> uploadPostCover(@RequestParam("file") MultipartFile file, @PathVariable Long postId, @AuthenticationPrincipal OAuth2User user) throws IOException {
+        postService.uploadPostCover(postId, file, user);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(value = "/{postId}/edit/cover", consumes = "multipart/form-data")
-    public ResponseEntity<?> updatePostCover(@RequestParam("file") MultipartFile file, @PathVariable Long postId, Authentication connectedUser) throws IOException {
-        postService.updatePostCover(postId, file, connectedUser);
+    public ResponseEntity<?> updatePostCover(@RequestParam("file") MultipartFile file, @PathVariable Long postId, @AuthenticationPrincipal OAuth2User user) throws IOException {
+        postService.updatePostCover(postId, file, user);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<PostResponse>> findAllPostsByUser(Authentication connectedUser){
-        return ResponseEntity.ok(postService.findPostsByUser(connectedUser));
+    public ResponseEntity<List<PostResponse>> findAllPostsByUser(@AuthenticationPrincipal OAuth2User user){
+        return ResponseEntity.ok(postService.findPostsByUser(user));
     }
 
     @GetMapping("/filter/{postType}")
